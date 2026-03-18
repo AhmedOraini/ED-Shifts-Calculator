@@ -121,12 +121,10 @@
     const monthsEn = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
     const monthsAr = ["يناير", "فبراير", "مارس", "أبريل", "مايو", "يونيو", "يوليو", "أغسطس", "سبتمبر", "أكتوبر", "نوفمبر", "ديسمبر"];
     
-    // Detect System Year & Month
     const systemDate = new Date();
     const currentYear = systemDate.getFullYear();
     const currentMonthIndex = systemDate.getMonth();
 
-    // Display the detected year in the title
     document.getElementById('yearDisplayEn').innerText = currentYear;
     document.getElementById('yearDisplayAr').innerText = currentYear;
 
@@ -144,7 +142,6 @@
 
     function updateMonthInfo() {
         const monthIndex = parseInt(document.getElementById('monthSelect').value);
-        // Correctly calculates days based on the system year (handles leap years)
         const daysInMonth = new Date(currentYear, monthIndex + 1, 0).getDate();
         document.getElementById('daysDisplay').innerText = daysInMonth;
         calculate();
@@ -156,9 +153,7 @@
         const target = parseFloat(document.getElementById('target').value) || 0;
         const offDays = parseFloat(document.getElementById('offDays').value) || 0;
 
-        // Your formula: ((Total - Off) / Total) * Target
         const result = ((totalDays - offDays) / totalDays) * target;
-
         document.getElementById('finalShifts').innerText = result.toFixed(2);
     }
 
