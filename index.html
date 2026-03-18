@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>2026 ED Shift Calculator</title>
+    <title>ED Shift Calculator</title>
     <style>
         :root {
             --primary: #2c3e50;
@@ -26,6 +26,10 @@
             max-width: 500px;
             width: 100%;
             margin-top: 20px;
+        }
+        .header-box {
+            text-align: center;
+            margin-bottom: 20px;
         }
         .lang-switch {
             text-align: right;
@@ -91,26 +95,16 @@
         <button class="lang-btn" onclick="toggleLanguage()">English / العربية</button>
     </div>
 
-    <h2 class="en">2026 ED Shift Calculator</h2>
-    <h2 class="ar">حاسبة شفتات الطوارئ لعام 2026</h2>
+    <div class="header-box">
+        <h2 class="en">ED Shift Calculator <span id="currentYearEn"></span></h2>
+        <h2 class="ar">حاسبة شفتات الطوارئ لعام <span id="currentYearAr"></span></h2>
+    </div>
 
     <div class="form-group">
-        <label class="en">Select Month (2026)</label>
-        <label class="ar">اختر الشهر (2026)</label>
-        <select id="month" onchange="calculate()">
-            <option value="31">January / يناير (31)</option>
-            <option value="28">February / فبراير (28)</option>
-            <option value="31">March / مارس (31)</option>
-            <option value="30">April / أبريل (30)</option>
-            <option value="31">May / مايو (31)</option>
-            <option value="30">June / يونيو (30)</option>
-            <option value="31">July / يوليو (31)</option>
-            <option value="31">August / أغسطس (31)</option>
-            <option value="30">September / سبتمبر (30)</option>
-            <option value="31">October / أكتوبر (31)</option>
-            <option value="30">November / نوفمبر (30)</option>
-            <option value="31">December / ديسمبر (31)</option>
-        </select>
+        <label class="en">Select Month</label>
+        <label class="ar">اختر الشهر</label>
+        <select id="monthSelect" onchange="calculate()">
+            </select>
     </div>
 
     <div class="form-group">
@@ -137,15 +131,38 @@
 </div>
 
 <script>
+    const monthNamesEn = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+    const monthNamesAr = ["يناير", "فبراير", "مارس", "أبريل", "مايو", "يونيو", "يوليو", "أغسطس", "سبتمبر", "أكتوبر", "نوفمبر", "ديسمبر"];
+    
+    const now = new Date();
+    const currentYear = now.getFullYear();
+    const currentMonth = now.getMonth();
+
+    // Set Year in Titles
+    document.getElementById('currentYearEn').innerText = currentYear;
+    document.getElementById('currentYearAr').innerText = currentYear;
+
+    function populateMonths() {
+        const select = document.getElementById('monthSelect');
+        for (let i = 0; i < 12; i++) {
+            // Get last day of month i (0-11) of current year
+            const daysInMonth = new Date(currentYear, i + 1, 0).getDate();
+            const option = document.createElement('option');
+            option.value = daysInMonth;
+            option.text = `${monthNamesEn[i]} / ${monthNamesAr[i]} (${daysInMonth})`;
+            if (i === currentMonth) option.selected = true;
+            select.appendChild(option);
+        }
+    }
+
     function calculate() {
-        const totalDays = parseFloat(document.getElementById('month').value);
+        const totalDays = parseFloat(document.getElementById('monthSelect').value);
         const target = parseFloat(document.getElementById('target').value) || 0;
         const offDays = parseFloat(document.getElementById('offDays').value) || 0;
 
         // Formula: ((Total - Off) / Total) * Target
         const result = ((totalDays - offDays) / totalDays) * target;
 
-        // Displaying with 2 decimal precision
         document.getElementById('finalShifts').innerText = result.toFixed(2);
     }
 
@@ -163,7 +180,9 @@
             document.querySelectorAll('.en').forEach(el => el.style.display = 'block');
         }
     }
-    // Initial Run
+
+    // Initialize
+    populateMonths();
     calculate();
 </script>
 
