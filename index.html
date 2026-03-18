@@ -27,14 +27,8 @@
             width: 100%;
             margin-top: 20px;
         }
-        .header-box {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        .lang-switch {
-            text-align: right;
-            margin-bottom: 20px;
-        }
+        .header-box { text-align: center; margin-bottom: 20px; }
+        .lang-switch { text-align: right; margin-bottom: 20px; }
         button.lang-btn {
             background: var(--primary);
             color: white;
@@ -44,15 +38,8 @@
             cursor: pointer;
             font-weight: bold;
         }
-        .form-group {
-            margin-bottom: 1.5rem;
-        }
-        label {
-            display: block;
-            margin-bottom: 0.5rem;
-            font-weight: bold;
-            color: var(--primary);
-        }
+        .form-group { margin-bottom: 1.5rem; }
+        label { display: block; margin-bottom: 0.5rem; font-weight: bold; color: var(--primary); }
         input, select {
             width: 100%;
             padding: 12px;
@@ -69,12 +56,7 @@
             text-align: center;
             border-left: 5px solid var(--accent);
         }
-        #finalShifts {
-            font-size: 2.5rem;
-            color: var(--accent);
-            display: block;
-            margin-top: 10px;
-        }
+        #finalShifts { font-size: 2.5rem; color: var(--accent); display: block; margin-top: 10px; }
         .footer {
             margin-top: 30px;
             text-align: center;
@@ -96,15 +78,20 @@
     </div>
 
     <div class="header-box">
-        <h2 class="en">ED Shift Calculator <span id="currentYearEn"></span></h2>
-        <h2 class="ar">حاسبة شفتات الطوارئ لعام <span id="currentYearAr"></span></h2>
+        <h2 class="en">ED Shift Calculator (<span id="yearDisplayEn"></span>)</h2>
+        <h2 class="ar">حاسبة شفتات الطوارئ لعام (<span id="yearDisplayAr"></span>)</h2>
     </div>
 
     <div class="form-group">
         <label class="en">Select Month</label>
         <label class="ar">اختر الشهر</label>
-        <select id="monthSelect" onchange="calculate()">
-            </select>
+        <select id="monthSelect" onchange="updateMonthInfo()"></select>
+    </div>
+
+    <div style="text-align: center; margin-bottom: 15px; font-size: 0.9rem; color: #7f8c8d;">
+        <span class="en">Total Days in this month: </span>
+        <span class="ar">إجمالي أيام الشهر: </span>
+        <b id="daysDisplay">--</b>
     </div>
 
     <div class="form-group">
@@ -131,36 +118,44 @@
 </div>
 
 <script>
-    const monthNamesEn = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-    const monthNamesAr = ["يناير", "فبراير", "مارس", "أبريل", "مايو", "يونيو", "يوليو", "أغسطس", "سبتمبر", "أكتوبر", "نوفمبر", "ديسمبر"];
+    const monthsEn = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+    const monthsAr = ["يناير", "فبراير", "مارس", "أبريل", "مايو", "يونيو", "يوليو", "أغسطس", "سبتمبر", "أكتوبر", "نوفمبر", "ديسمبر"];
     
-    const now = new Date();
-    const currentYear = now.getFullYear();
-    const currentMonth = now.getMonth();
+    // System Year & Month
+    const systemDate = new Date();
+    const currentYear = systemDate.getFullYear();
+    const currentMonthIndex = systemDate.getMonth();
 
-    // Set Year in Titles
-    document.getElementById('currentYearEn').innerText = currentYear;
-    document.getElementById('currentYearAr').innerText = currentYear;
+    document.getElementById('yearDisplayEn').innerText = currentYear;
+    document.getElementById('yearDisplayAr').innerText = currentYear;
 
-    function populateMonths() {
+    function init() {
         const select = document.getElementById('monthSelect');
-        for (let i = 0; i < 12; i++) {
-            // Get last day of month i (0-11) of current year
-            const daysInMonth = new Date(currentYear, i + 1, 0).getDate();
+        monthsEn.forEach((month, index) => {
             const option = document.createElement('option');
-            option.value = daysInMonth;
-            option.text = `${monthNamesEn[i]} / ${monthNamesAr[i]} (${daysInMonth})`;
-            if (i === currentMonth) option.selected = true;
+            option.value = index;
+            option.text = `${month} / ${monthsAr[index]}`;
+            if (index === currentMonthIndex) option.selected = true;
             select.appendChild(option);
-        }
+        });
+        updateMonthInfo();
+    }
+
+    function updateMonthInfo() {
+        const monthIndex = parseInt(document.getElementById('monthSelect').value);
+        // This line is the magic: it finds the last day of the month for the current system year
+        const daysInMonth = new Date(currentYear, monthIndex + 1, 0).getDate();
+        document.getElementById('daysDisplay').innerText = daysInMonth;
+        calculate();
     }
 
     function calculate() {
-        const totalDays = parseFloat(document.getElementById('monthSelect').value);
+        const monthIndex = parseInt(document.getElementById('monthSelect').value);
+        const totalDays = new Date(currentYear, monthIndex + 1, 0).getDate();
         const target = parseFloat(document.getElementById('target').value) || 0;
         const offDays = parseFloat(document.getElementById('offDays').value) || 0;
 
-        // Formula: ((Total - Off) / Total) * Target
+        // Your specific formula
         const result = ((totalDays - offDays) / totalDays) * target;
 
         document.getElementById('finalShifts').innerText = result.toFixed(2);
@@ -169,21 +164,12 @@
     function toggleLanguage() {
         const body = document.body;
         const isEn = body.getAttribute('dir') === 'ltr';
-        
-        if (isEn) {
-            body.setAttribute('dir', 'rtl');
-            document.querySelectorAll('.en').forEach(el => el.style.display = 'none');
-            document.querySelectorAll('.ar').forEach(el => el.style.display = 'block');
-        } else {
-            body.setAttribute('dir', 'ltr');
-            document.querySelectorAll('.ar').forEach(el => el.style.display = 'none');
-            document.querySelectorAll('.en').forEach(el => el.style.display = 'block');
-        }
+        body.setAttribute('dir', isEn ? 'rtl' : 'ltr');
+        document.querySelectorAll('.en').forEach(el => el.style.display = isEn ? 'none' : 'block');
+        document.querySelectorAll('.ar').forEach(el => el.style.display = isEn ? 'block' : 'none');
     }
 
-    // Initialize
-    populateMonths();
-    calculate();
+    init();
 </script>
 
 </body>
