@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ED Shift Calculator / حاسبة شفتات الطوارئ</title>
+    <title>2026 ED Shift Calculator</title>
     <style>
         :root {
             --primary: #2c3e50;
@@ -79,7 +79,6 @@
             color: var(--primary);
             line-height: 1.6;
         }
-        /* Language Toggling */
         [dir="rtl"] .lang-switch { text-align: left; }
         [dir="rtl"] .result-card { border-left: none; border-right: 5px solid var(--accent); }
         .ar { display: none; }
@@ -92,16 +91,15 @@
         <button class="lang-btn" onclick="toggleLanguage()">English / العربية</button>
     </div>
 
-    <h2 class="en">ED Shift Calculator</h2>
-    <h2 class="ar">حاسبة شفتات قسم الطوارئ</h2>
+    <h2 class="en">2026 ED Shift Calculator</h2>
+    <h2 class="ar">حاسبة شفتات الطوارئ لعام 2026</h2>
 
     <div class="form-group">
-        <label class="en">Select Month</label>
-        <label class="ar">اختر الشهر</label>
+        <label class="en">Select Month (2026)</label>
+        <label class="ar">اختر الشهر (2026)</label>
         <select id="month" onchange="calculate()">
             <option value="31">January / يناير (31)</option>
             <option value="28">February / فبراير (28)</option>
-            <option value="29">February (Leap Year) / فبراير (كبيسة) (29)</option>
             <option value="31">March / مارس (31)</option>
             <option value="30">April / أبريل (30)</option>
             <option value="31">May / مايو (31)</option>
@@ -144,11 +142,10 @@
         const target = parseFloat(document.getElementById('target').value) || 0;
         const offDays = parseFloat(document.getElementById('offDays').value) || 0;
 
-        // Formula: ((Total Days - Off Days) / Total Days) * Target
-        const workingRatio = (totalDays - offDays) / totalDays;
-        const result = workingRatio * target;
+        // Formula: ((Total - Off) / Total) * Target
+        const result = ((totalDays - offDays) / totalDays) * target;
 
-        // Display result rounded to 2 decimal places
+        // Displaying with 2 decimal precision
         document.getElementById('finalShifts').innerText = result.toFixed(2);
     }
 
@@ -166,8 +163,7 @@
             document.querySelectorAll('.en').forEach(el => el.style.display = 'block');
         }
     }
-
-    // Initial calculation on load
+    // Initial Run
     calculate();
 </script>
 
