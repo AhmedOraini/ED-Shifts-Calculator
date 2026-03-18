@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ED Shift Calculator / حاسبة شفتات الطوارئ</title>
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --accent: #e74c3c;
+            --bg: #f4f7f6;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg);
+            display: flex;
+            justify-content: center;
+            padding: 20px;
+            margin: 0;
+        }
+        .container {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            max-width: 500px;
+            width: 100%;
+            margin-top: 20px;
+        }
+        .lang-switch {
+            text-align: right;
+            margin-bottom: 20px;
+        }
+        button.lang-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+            color: var(--primary);
+        }
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            box-sizing: border-box;
+            font-size: 1rem;
+        }
+        .result-card {
+            background: #ecf0f1;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-top: 2rem;
+            text-align: center;
+            border-left: 5px solid var(--accent);
+        }
+        #finalShifts {
+            font-size: 2.5rem;
+            color: var(--accent);
+            display: block;
+            margin-top: 10px;
+        }
+        .footer {
+            margin-top: 30px;
+            text-align: center;
+            border-top: 1px solid #eee;
+            padding-top: 20px;
+            color: var(--primary);
+            line-height: 1.6;
+        }
+        /* Language Toggling */
+        [dir="rtl"] .lang-switch { text-align: left; }
+        [dir="rtl"] .result-card { border-left: none; border-right: 5px solid var(--accent); }
+        .ar { display: none; }
+    </style>
+</head>
+<body>
+
+<div class="container" id="mainContainer">
+    <div class="lang-switch">
+        <button class="lang-btn" onclick="toggleLanguage()">English / العربية</button>
+    </div>
+
+    <h2 class="en">ED Shift Calculator</h2>
+    <h2 class="ar">حاسبة شفتات قسم الطوارئ</h2>
+
+    <div class="form-group">
+        <label class="en">Select Month</label>
+        <label class="ar">اختر الشهر</label>
+        <select id="month" onchange="calculate()">
+            <option value="31">January / يناير (31)</option>
+            <option value="28">February / فبراير (28)</option>
+            <option value="29">February (Leap Year) / فبراير (كبيسة) (29)</option>
+            <option value="31">March / مارس (31)</option>
+            <option value="30">April / أبريل (30)</option>
+            <option value="31">May / مايو (31)</option>
+            <option value="30">June / يونيو (30)</option>
+            <option value="31">July / يوليو (31)</option>
+            <option value="31">August / أغسطس (31)</option>
+            <option value="30">September / سبتمبر (30)</option>
+            <option value="31">October / أكتوبر (31)</option>
+            <option value="30">November / نوفمبر (30)</option>
+            <option value="31">December / ديسمبر (31)</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label class="en">Target Monthly Shifts</label>
+        <label class="ar">عدد الشفتات المطلوبة في الشهر</label>
+        <input type="number" id="target" value="18" step="0.5" oninput="calculate()">
+    </div>
+
+    <div class="form-group">
+        <label class="en">Days Off / Vacation</label>
+        <label class="ar">أيام الإجازة / الأوف</label>
+        <input type="number" id="offDays" value="0" step="1" oninput="calculate()">
+    </div>
+
+    <div class="result-card">
+        <span class="en">Calculated Shifts:</span>
+        <span class="ar">الشفتات المستحقة:</span>
+        <strong id="finalShifts">0</strong>
+    </div>
+
+    <div class="footer">
+        <strong>Created by Dr. Ahmed Aloraini<br>@AhmedOraini</strong>
+    </div>
+</div>
+
+<script>
+    function calculate() {
+        const totalDays = parseFloat(document.getElementById('month').value);
+        const target = parseFloat(document.getElementById('target').value) || 0;
+        const offDays = parseFloat(document.getElementById('offDays').value) || 0;
+
+        // Formula: ((Total Days - Off Days) / Total Days) * Target
+        const workingRatio = (totalDays - offDays) / totalDays;
+        const result = workingRatio * target;
+
+        // Display result rounded to 2 decimal places
+        document.getElementById('finalShifts').innerText = result.toFixed(2);
+    }
+
+    function toggleLanguage() {
+        const body = document.body;
+        const isEn = body.getAttribute('dir') === 'ltr';
+        
+        if (isEn) {
+            body.setAttribute('dir', 'rtl');
+            document.querySelectorAll('.en').forEach(el => el.style.display = 'none');
+            document.querySelectorAll('.ar').forEach(el => el.style.display = 'block');
+        } else {
+            body.setAttribute('dir', 'ltr');
+            document.querySelectorAll('.ar').forEach(el => el.style.display = 'none');
+            document.querySelectorAll('.en').forEach(el => el.style.display = 'block');
+        }
+    }
+
+    // Initial calculation on load
+    calculate();
+</script>
+
+</body>
+</html>
