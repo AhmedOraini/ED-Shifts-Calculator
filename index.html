@@ -65,6 +65,7 @@
             color: var(--primary);
             line-height: 1.6;
         }
+        #manualDaysContainer { display: none; background: #fff9f9; padding: 10px; border-radius: 6px; border: 1px dashed var(--accent); margin-top: 10px; }
         [dir="rtl"] .lang-switch { text-align: left; }
         [dir="rtl"] .result-card { border-left: none; border-right: 5px solid var(--accent); }
         .ar { display: none; }
@@ -86,11 +87,17 @@
         <label class="en">Select Month</label>
         <label class="ar">اختر الشهر</label>
         <select id="monthSelect" onchange="updateMonthInfo()"></select>
+        
+        <div id="manualDaysContainer">
+            <label class="en">Enter Number of Days</label>
+            <label class="ar">أدخل عدد الأيام يدوياً</label>
+            <input type="number" id="manualDaysInput" value="30" oninput="calculate()">
+        </div>
     </div>
 
     <div style="text-align: center; margin-bottom: 15px; font-size: 0.9rem; color: #7f8c8d;">
-        <span class="en">Total Days in this month: </span>
-        <span class="ar">إجمالي أيام الشهر: </span>
+        <span class="en">Total Days for Calculation: </span>
+        <span class="ar">إجمالي الأيام للحساب: </span>
         <b id="daysDisplay">--</b>
     </div>
 
@@ -137,23 +144,47 @@
             if (index === currentMonthIndex) option.selected = true;
             select.appendChild(option);
         });
+
+        // Add Manual Option at the end
+        const manualOption = document.createElement('option');
+        manualOption.value = "manual";
+        manualOption.text = "Manual Entry / إدخال يدوي";
+        select.appendChild(manualOption);
+
         updateMonthInfo();
     }
 
     function updateMonthInfo() {
-        const monthIndex = parseInt(document.getElementById('monthSelect').value);
-        const daysInMonth = new Date(currentYear, monthIndex + 1, 0).getDate();
-        document.getElementById('daysDisplay').innerText = daysInMonth;
+        const selectValue = document.getElementById('monthSelect').value;
+        const manualContainer = document.getElementById('manualDaysContainer');
+        
+        if (selectValue === "manual") {
+            manualContainer.style.display = "block";
+        } else {
+            manualContainer.style.display = "none";
+            const monthIndex = parseInt(selectValue);
+            const daysInMonth = new Date(currentYear, monthIndex + 1, 0).getDate();
+            document.getElementById('daysDisplay').innerText = daysInMonth;
+        }
         calculate();
     }
 
     function calculate() {
-        const monthIndex = parseInt(document.getElementById('monthSelect').value);
-        const totalDays = new Date(currentYear, monthIndex + 1, 0).getDate();
+        let totalDays;
+        const selectValue = document.getElementById('monthSelect').value;
+        
+        if (selectValue === "manual") {
+            totalDays = parseFloat(document.getElementById('manualDaysInput').value) || 0;
+            document.getElementById('daysDisplay').innerText = totalDays;
+        } else {
+            const monthIndex = parseInt(selectValue);
+            totalDays = new Date(currentYear, monthIndex + 1, 0).getDate();
+        }
+
         const target = parseFloat(document.getElementById('target').value) || 0;
         const offDays = parseFloat(document.getElementById('offDays').value) || 0;
 
-        const result = ((totalDays - offDays) / totalDays) * target;
+        const result = totalDays > 0 ? ((totalDays - offDays) / totalDays) * target : 0;
         document.getElementById('finalShifts').innerText = result.toFixed(2);
     }
 
