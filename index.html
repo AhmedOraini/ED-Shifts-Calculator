@@ -56,7 +56,7 @@
             text-align: center;
             border-left: 5px solid var(--accent);
         }
-        #finalShifts { font-size: 2.5rem; color: var(--accent); display: block; margin-top: 10px; }
+        #finalShifts { font-size: 3rem; color: var(--accent); display: block; margin-top: 10px; }
         .footer {
             margin-top: 30px;
             text-align: center;
@@ -65,7 +65,14 @@
             color: var(--primary);
             line-height: 1.6;
         }
-        #manualDaysContainer { display: none; background: #fff9f9; padding: 10px; border-radius: 6px; border: 1px dashed var(--accent); margin-top: 10px; }
+        #manualDaysContainer { 
+            display: none; 
+            background: #fff5f5; 
+            padding: 15px; 
+            border-radius: 8px; 
+            border: 2px dashed #dcdde1; 
+            margin-top: 10px; 
+        }
         [dir="rtl"] .lang-switch { text-align: left; }
         [dir="rtl"] .result-card { border-left: none; border-right: 5px solid var(--accent); }
         .ar { display: none; }
@@ -89,22 +96,24 @@
         <select id="monthSelect" onchange="updateMonthInfo()"></select>
         
         <div id="manualDaysContainer">
-            <label class="en">Enter Number of Days</label>
-            <label class="ar">أدخل عدد الأيام يدوياً</label>
+            <label class="en">Enter Total Days Manually</label>
+            <label class="ar">أدخل عدد الأيام الإجمالي يدوياً</label>
             <input type="number" id="manualDaysInput" value="30" oninput="calculate()">
         </div>
     </div>
 
     <div style="text-align: center; margin-bottom: 15px; font-size: 0.9rem; color: #7f8c8d;">
-        <span class="en">Total Days for Calculation: </span>
-        <span class="ar">إجمالي الأيام للحساب: </span>
+        <span class="en">Calculation Base: </span>
+        <span class="ar">أساس الحساب: </span>
         <b id="daysDisplay">--</b>
+        <span class="en"> days</span>
+        <span class="ar"> أيام</span>
     </div>
 
     <div class="form-group">
         <label class="en">Target Monthly Shifts</label>
         <label class="ar">عدد الشفتات المطلوبة في الشهر</label>
-        <input type="number" id="target" value="18" step="0.5" oninput="calculate()">
+        <input type="number" id="target" value="18" step="1" oninput="calculate()">
     </div>
 
     <div class="form-group">
@@ -145,7 +154,6 @@
             select.appendChild(option);
         });
 
-        // Add Manual Option at the end
         const manualOption = document.createElement('option');
         manualOption.value = "manual";
         manualOption.text = "Manual Entry / إدخال يدوي";
@@ -184,8 +192,10 @@
         const target = parseFloat(document.getElementById('target').value) || 0;
         const offDays = parseFloat(document.getElementById('offDays').value) || 0;
 
-        const result = totalDays > 0 ? ((totalDays - offDays) / totalDays) * target : 0;
-        document.getElementById('finalShifts').innerText = result.toFixed(2);
+        const rawResult = totalDays > 0 ? ((totalDays - offDays) / totalDays) * target : 0;
+        
+        // Math.round simplifies the fraction to the nearest whole number
+        document.getElementById('finalShifts').innerText = Math.round(rawResult);
     }
 
     function toggleLanguage() {
